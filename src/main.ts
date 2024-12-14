@@ -39,7 +39,7 @@ import CONFIG from "./config.json";
     const date = document.getElementById("date")!;
     date.innerHTML = `${now.getFullYear()}年<br>${
       now.getMonth() + 1
-    }月<br>${now.getDate()}日<br>星期${"一二三四五六日"[now.getDay() - 1]}`;
+    }月<br>${now.getDate()}日<br>星期${"日一二三四五六"[now.getDay()]}`;
   })();
 
   // generate clock
