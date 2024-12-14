@@ -1,0 +1,112 @@
+:is(body) {
+  font-family: "Noto Serif SC", "serif";
+  overflow: hidden;
+  background-image: url("https://bing.img.run/1920x1080.php");
+  background-size: cover;
+}
+
+#container {
+  display: grid;
+  grid-template-columns: repeat(10, 10vw);
+  grid-template-rows: repeat(10, 10vh);
+}
+
+#schedule-container {
+  grid-column-start: 10;
+  grid-row-start: 1;
+  height: 100vh;
+  text-align: right;
+  line-height: 3rem;
+
+}
+
+#schedule {
+  padding-left: 0.5rem;
+  padding-right: 2rem;
+  display: inline-block;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 0 7px black;
+  height: 100vh;
+}
+
+#date {
+  grid-column-start: 9;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 0 7px black;
+  text-align: center;
+}
+
+.vertical-divider {
+  height: 100vh;
+  width: 1px;
+  background-color: #ffffff33;
+  grid-column-start: 4;
+}
+
+#vd-1 {
+  grid-column-start: 4;
+}
+
+#vd-2 {
+  grid-column-start: 9;
+}
+
+#clock-container {
+  text-align: center;
+  grid-column-start: 4;
+  grid-column-end: 9;
+  grid-row-start: 2;
+}
+
+#clock {
+  color: white;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  display: inline-block;
+  height: 4.5rem;
+  overflow: hidden;
+  mask: linar-gradient(0deg, white 0%, transparent 20%, transparent 80%, white 100%);
+  position: relative;
+  text-shadow: 0 0 7px black;
+
+}
+
+.clock-digit {
+  font-size: 4rem;
+  font-weight: 700;
+  font-family: "Red Hat Mono", monospace;
+  letter-spacing: 0.25rem;
+  line-height: 2.5rem;
+  display: inline-block;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  transform: translateY(0%);
+  transition: transform 0.2s ease-in-out;
+}
+
+#countdown-container {
+  grid-row-start: 4;
+  grid-row-end: 6;
+  grid-column-start: 4;
+  grid-column-end: 9;
+  text-align: center;
+}
+
+#countdown {
+  color: white;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  display: inline-block;
+  font-size: 3rem;
+  text-shadow: 0 0 7px black;
+}
+
+#countdown-day-number {
+  font-size: 6rem;
+  font-weight: 600;
+  text-shadow: 0 0 7px red;
+}
