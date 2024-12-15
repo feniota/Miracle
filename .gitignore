@@ -25,5 +25,5 @@ dist-ssr
 
 # secret file
 .env
-src/secrets.json
+src/server/secrets.json
 deploy-secrets.ps1
