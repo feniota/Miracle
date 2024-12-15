@@ -1,5 +1,0 @@
-$ServerAddress = "root@example.com"
-$ScpAdditionalParams = "-C", "-r", "-P2222"
-$SshAdditionalParams = "-4"
-$ServerPath = "/usr/share/nginx/html/"
-$ChownUser = "nginx"

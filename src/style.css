@@ -1,7 +1,7 @@
 :is(body) {
   font-family: "Noto Serif SC", "serif";
   overflow: hidden;
-  background-image: url("https://bing.img.run/1920x1080.php");
+  background-image: url("/src/assets/th.jpg");
   background-size: cover;
 }
 
