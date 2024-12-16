@@ -4,7 +4,10 @@ use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use std::ffi::c_void;
 use std::sync::atomic::AtomicPtr;
 use std::sync::{Arc, Mutex};
+use tauri::menu::{Menu, MenuItem};
+use tauri::tray::TrayIconBuilder;
 use tauri::Manager;
+use tauri_plugin_autostart::MacosLauncher;
 use windows::core::{w, PCWSTR};
 use windows::Win32::Foundation::{BOOL, HWND, LPARAM, TRUE, WPARAM};
 use windows::Win32::UI::WindowsAndMessaging::{
@@ -16,12 +19,6 @@ use windows::Win32::UI::WindowsAndMessaging::{
 lazy_static! {
     static ref WORKVIEW_HANDLE: Arc<Mutex<AtomicPtr<c_void>>> =
         Arc::new(Mutex::new(AtomicPtr::new(std::ptr::null_mut())));
-}
-
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
@@ -37,7 +34,6 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
     // 如果找到桌面句柄再找壁纸句柄
     match defview {
         Ok(_) => {
-            println!("找到桌面桌面句柄");
             if let Ok(workview) = FindWindowExW(
                 HWND(std::ptr::null_mut()),
                 hwnd,
@@ -57,7 +53,7 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
                 ) {
                     *WORKVIEW_HANDLE.lock().unwrap() = AtomicPtr::new(workview.0);
                 } else {
-                    println!("没有找到WorkerW句柄");
+                    // further error processing needed
                 }
             }
 
@@ -73,18 +69,23 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
 pub fn run() {
     tauri::Builder::default()
         .setup(|app: &mut tauri::App| {
-            use tauri_plugin_autostart::MacosLauncher;
-            use tauri_plugin_autostart::ManagerExt;
-
-            app.handle().plugin(tauri_plugin_autostart::init(
-                MacosLauncher::LaunchAgent,
-                Some(vec![]),
-            ))?;
-
-            // Get the autostart manager
-            let autostart_manager = app.autolaunch();
-            // Enable autostart
-            let _ = autostart_manager.enable();
+            let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&quit_i])?;
+            let _tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().unwrap().clone())
+                .tooltip("Miracle")
+                .menu(&menu)
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    "quit" => {
+                        println!("quit menu item was clicked");
+                        app.exit(0);
+                    }
+                    _ => {
+                        println!("menu item {:?} not handled", event.id);
+                    }
+                })
+                .menu_on_left_click(true)
+                .build(app);
 
             let main_window = app.get_window("main").unwrap();
 
@@ -126,9 +127,12 @@ pub fn run() {
 
             Ok(())
         })
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            Some(vec![]),
+        ))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

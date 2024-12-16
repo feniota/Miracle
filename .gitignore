@@ -38,6 +38,7 @@ dist-ssr
 
 # rust binary
 target/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
