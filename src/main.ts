@@ -1,5 +1,6 @@
 import "./style.css";
 import CONFIG from "./config.json";
+import { fetch } from "@tauri-apps/plugin-http";
 
 (() => {
   // generate schedule text
@@ -68,5 +69,41 @@ import CONFIG from "./config.json";
       transformByDigit(Math.floor(seconds / 10), clock_sec1);
       transformByDigit(seconds % 10, clock_sec2);
     }, 1000);
+  })();
+
+  // obtain daily wallpaper
+  (() => {
+    fetch("https://api.nguaduot.cn/spotlight/today?json=1")
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          return Promise.reject();
+        }
+      })
+      .then((res) => {
+        if (res.status == 1) {
+          return fetch(res.data.imgurl, {
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
+            },
+          });
+        } else {
+          return Promise.reject();
+        }
+      })
+      .then((res) => {
+        if (res.ok) {
+          return res.blob();
+        } else {
+          return Promise.reject();
+        }
+      })
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        document.body.style.backgroundImage = `url(${url})`;
+      })
+      .catch((_) => {});
   })();
 })();

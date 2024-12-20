@@ -25,6 +25,7 @@
     }
   },
   "bundle": {
+    "createUpdaterArtifacts": true,
     "active": true,
     "targets": "all",
     "icon": [
@@ -34,5 +35,14 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDZGNkUzQzZCNzZBRUM4QUQKUldTdHlLNTJhenh1YjNaMVNPcDJhOG5SOGNHSXl5bSs2T3hMbTV6REdrZ0N2cUNNSmhZUkV0SUcK",
+      "endpoints": [
+        "https://miracle.enita.cn/api/v1/update/{{current_version}}",
+        "https://github.com/feniota/Miracle/releases/latest/download/update.json"
+      ]
+    }
   }
 }

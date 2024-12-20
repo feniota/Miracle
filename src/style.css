@@ -3,6 +3,8 @@
   overflow: hidden;
   background-image: url("/src/assets/th.jpg");
   background-size: cover;
+  transition: background-image 3s ease;
+
 }
 
 #container {

@@ -52,5 +52,4 @@ target/
 
 # secret file
 .env
-src/server/secrets.json
-deploy-secrets.ps1
+scripts/build-secrets.ps1
