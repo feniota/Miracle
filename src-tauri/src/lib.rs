@@ -67,6 +67,7 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(
             tauri_plugin_log::Builder::new()
                 .target(tauri_plugin_log::Target::new(
@@ -93,7 +94,13 @@ pub fn run() {
         .setup(|app: &mut tauri::App| {
             let quit_i = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
             let restart_i = MenuItem::with_id(app, "restart", "重启壁纸", true, None::<&str>)?;
+            // Whether debug assertions are enabled or not. This is true for `tauri dev` and `tauri build --debug`.
             let menu = Menu::with_items(app, &[&quit_i, &restart_i])?;
+            #[cfg(debug_assertions)]
+            {
+                let debug_i = MenuItem::with_id(app, "debug", "启动 DevTools", true, None::<&str>)?;
+                let _ = menu.append(&debug_i);
+            }
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
                 .tooltip("Miracle")
@@ -104,6 +111,10 @@ pub fn run() {
                     }
                     "restart" => {
                         app.restart();
+                    }
+                    "debug" => {
+                        #[cfg(debug_assertions)]
+                        let _ = app.get_webview_window("main").unwrap().open_devtools();
                     }
                     _ => {
                         println!("menu item {:?} not handled", event.id);

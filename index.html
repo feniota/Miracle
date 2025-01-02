@@ -5,37 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="module" src="/src/main.ts"></script>
     <title>Miracle</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <div id="container">
-      <div class="vertical-divider" id="vd-1"></div>
-      <div class="vertical-divider" id="vd-2"></div>
-      <div id="date"></div>
-      <div id="schedule-container">
-        <div class="content" id="schedule"></div>
-      </div>
-      <div id="clock-container">
-        <div class="content" id="clock">
-          <div class="clock-digit" id="clock-hour-1">0123456789</div>
-          <div class="clock-digit" id="clock-hour-2">0123456789</div>
-          <div class="clock-digit" id="clock-sep-1">::::::::::</div>
-          <div class="clock-digit" id="clock-min-1">0123456789</div>
-          <div class="clock-digit" id="clock-min-2">0123456789</div>
-          <div class="clock-digit" id="clock-sep-2">::::::::::</div>
-          <div class="clock-digit" id="clock-sec-1">0123456789</div>
-          <div class="clock-digit" id="clock-sec-2">0123456789</div>
+    <div id="body">
+      <div id="container">
+        <div id="date"></div>
+        <div id="schedule-container">
+          <div class="content" id="schedule"></div>
+        </div>
+        <div id="clock-container">
+          <div class="content" id="clock">
+            <div class="clock-digit" id="clock-hour-1">0123456789</div>
+            <div class="clock-digit" id="clock-hour-2">0123456789</div>
+            <div class="clock-digit" id="clock-sep-1">::::::::::</div>
+            <div class="clock-digit" id="clock-min-1">0123456789</div>
+            <div class="clock-digit" id="clock-min-2">0123456789</div>
+            <div class="clock-digit" id="clock-sep-2">::::::::::</div>
+            <div class="clock-digit" id="clock-sec-1">0123456789</div>
+            <div class="clock-digit" id="clock-sec-2">0123456789</div>
+          </div>
+        </div>
+        <div class="content" id="countdown-container">
+          <div id="countdown"></div>
+        </div>
+        <div class="content" id="fortune"></div>
+        <div class="content" id="wallpaper-desc">
+          <div class="header">阿尔卑斯山美景</div>
+          <div class="content">
+            有些人认为，登山家阿尔弗雷德·威尔斯于 1854
+            年登上韦特峰（图中最左侧的山脉）后，开启了阿尔卑斯登山黄金时代。当时，当地的许多山峰都是首次被先驱登山者们所征服。在巴克普湖（Bachalpsee，又称
+            Lake Bachalp）的这片湖岸地区，我们离蔚蓝的瑞士天空并不算近 -
+            尽管这已经是海拔 2,300
+            米的高处，周围环绕着伯尔尼兹阿尔卑斯山脉。在这样一个爽朗的日子里，巴克普湖清晰地倒映着韦特峰、施雷克峰和芬斯特腊尔霍恩峰的巍峨山峰，这让白雪皑皑的山顶看起来几乎触手可及。
+          </div>
+          <div class="copyright">© Florin Baumann / EyeEm / Getty Images</div>
         </div>
       </div>
-      <div class="content" id="countdown-container">
-        <div id="countdown"></div>
-      </div>
-      <div class="content" id="fortune"></div>
     </div>
   </body>
 </html>

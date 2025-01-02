@@ -7,12 +7,16 @@
     "core:default",
     "opener:default",
     "dialog:allow-message",
+    "log:default",
     {
       "identifier": "http:default",
       "allow": [
         { "url": "https://*.enita.cn" },
-        { "url": "https://api.nguaduot.cn" },
-        { "url": "https://p.ananas.chaoxing.com" }
+        { "url": "https://*.github.com" },
+        { "url": "https://*.githubusercontent.com" },
+        { "url": "https://*.githubassets.com" },
+        { "url": "https://fd.api.iris.microsoft.com" },
+        { "url": "https://res.public.onecdn.static.microsoft" }
       ]
     }
   ]

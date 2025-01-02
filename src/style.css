@@ -1,10 +1,23 @@
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("/src/assets/NotoSerifSC-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Red Hat Mono";
+  src: url("/src/assets/RedHatMono-VariableFont_wght.ttf");
+}
+
 :is(body) {
+  margin: 0 !important;
+}
+
+#body {
   font-family: "Noto Serif SC", "serif";
   overflow: hidden;
-  background-image: url("/src/assets/th.jpg");
+  background-image: url("/src/assets/wp_placeholder.jpg");
   background-size: cover;
   transition: background-image 3s ease;
-
 }
 
 #container {
@@ -40,21 +53,6 @@
   color: #fff;
   text-shadow: 0 0 7px black;
   text-align: center;
-}
-
-.vertical-divider {
-  height: 100vh;
-  width: 1px;
-  background-color: #ffffff33;
-  grid-column-start: 4;
-}
-
-#vd-1 {
-  grid-column-start: 4;
-}
-
-#vd-2 {
-  grid-column-start: 9;
 }
 
 #clock-container {
@@ -111,4 +109,23 @@
   font-size: 6rem;
   font-weight: 600;
   text-shadow: 0 0 7px red;
+}
+
+#wallpaper-desc {
+  grid-row-start: 7;
+  grid-row-end: 8;
+  grid-column-start: 4;
+  grid-column-end: 9;
+
+  text-shadow: 0 0 7px black;
+  color: white;
+
+  .header {
+    font-size: 1.3rem;
+    font-weight: 500;
+  }
+
+  .copyright {
+    text-align: right;
+  }
 }
