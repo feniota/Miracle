@@ -1,7 +1,7 @@
+import "mdui/mdui.css";
 import "./style.css";
 import CONFIG from "./config.json";
 import { debug, warn } from "@tauri-apps/plugin-log";
-
 import _axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 import { snackbar } from "mdui";
@@ -128,10 +128,13 @@ const get_wallpaper = () => {
       }
     })
     .catch((e) => {
-      warn("fetch wallpaper failed because of: " + e.msg || e);
+      warn("fetch wallpaper failed because of: " + (e.msg || e.code || e));
       Snackbar.open = false;
       snackbar({
-        message: "由于 " + e.msg || e + " 壁纸下载失败，将于 5 分钟后重试",
+        message:
+          "由于 " +
+          (e.msg || e.code || e) +
+          "，壁纸下载失败，将于 5 分钟后重试",
         placement: "top",
         autoCloseDelay: 2000,
         messageLine: 2,
