@@ -5,6 +5,8 @@ import { debug, warn } from "@tauri-apps/plugin-log";
 import _axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 import { snackbar } from "mdui";
+import { listen } from "@tauri-apps/api/event";
+import { animate_wallpaper_description } from "./lib/animation";
 const axios = _axios.create({ adapter: axiosTauriApiAdapter });
 
 // generate schedule text
@@ -75,6 +77,8 @@ if (CONFIG) {
   }, 1000);
 }
 
+// 如果壁纸获取失败并调用了 setTimeout，这将是返回的 id，否则是 -1
+let wp_retry_id = -1;
 // obtain daily wallpaper
 const get_wallpaper = () => {
   debug("start fetching wallpaper");
@@ -86,7 +90,7 @@ const get_wallpaper = () => {
   };
   axios
     .get(
-      "https://fd.api.iris.microsoft.com/v4/api/selection?&placement=88000820&bcnt=4&country=CN&locale=zh-CN&fmt=json",
+      "https://fd.api.iris.microsoft.com/v4/api/selection?&placement=88000820&bcnt=1&country=CN&locale=zh-CN&fmt=json",
       { headers }
     )
     .then((res) => {
@@ -98,7 +102,7 @@ const get_wallpaper = () => {
       if (ok) {
         return Promise.resolve(JSON.parse(res.data.batchrsp.items[0].item));
       } else {
-        return Promise.reject({ msg: "fetch image info failed", resp: res });
+        return Promise.reject({ msg: "获取图像元信息失败", resp: res });
       }
     })
     .then((res) => {
@@ -113,18 +117,17 @@ const get_wallpaper = () => {
         snackbar({
           message: "壁纸下载成功",
           placement: "top",
-          autoCloseDelay: 2000,
         });
+        wp_retry_id = -1;
         const url = URL.createObjectURL(res.img.data);
         document.getElementById("body")!.style.backgroundImage = `url(${url})`;
-        document.querySelector("#wallpaper-desc .header")!.innerHTML =
-          res.desc.ad.title;
-        document.querySelector("#wallpaper-desc .content")!.innerHTML =
-          res.desc.ad.description;
-        document.querySelector("#wallpaper-desc .copyright")!.innerHTML =
-          res.desc.ad.copyright;
+        animate_wallpaper_description(
+          res.desc.ad.title,
+          res.desc.ad.description,
+          res.desc.ad.copyright
+        );
       } else {
-        return Promise.reject({ msg: "fetch image failed", resp: res.img });
+        return Promise.reject({ msg: "下载图片失败", resp: res.img });
       }
     })
     .catch((e) => {
@@ -136,12 +139,16 @@ const get_wallpaper = () => {
           (e.msg || e.code || e) +
           "，壁纸下载失败，将于 5 分钟后重试",
         placement: "top",
-        autoCloseDelay: 2000,
         messageLine: 2,
       });
       if (e.resp) warn(e.resp);
       // retry after 5mins
-      setTimeout(get_wallpaper, 300000);
+      wp_retry_id = setTimeout(get_wallpaper, 300000);
     });
 };
 get_wallpaper();
+
+listen<void>("update-wallpaper", (_) => {
+  if (wp_retry_id !== -1) clearTimeout(wp_retry_id);
+  get_wallpaper();
+});

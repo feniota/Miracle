@@ -6,7 +6,7 @@ use std::sync::atomic::AtomicPtr;
 use std::sync::{Arc, Mutex};
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::TrayIconBuilder;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_dialog::MessageDialogKind;
@@ -93,14 +93,17 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app: &mut tauri::App| {
             let quit_i = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
+            let wallpaper_i =
+                MenuItem::with_id(app, "update-wallpaper", "更新壁纸", true, None::<&str>)?;
             let restart_i = MenuItem::with_id(app, "restart", "重启壁纸", true, None::<&str>)?;
-            // Whether debug assertions are enabled or not. This is true for `tauri dev` and `tauri build --debug`.
-            let menu = Menu::with_items(app, &[&quit_i, &restart_i])?;
+            let menu = Menu::with_items(app, &[&quit_i, &wallpaper_i, &restart_i])?;
+
             #[cfg(debug_assertions)]
             {
                 let debug_i = MenuItem::with_id(app, "debug", "启动 DevTools", true, None::<&str>)?;
                 let _ = menu.append(&debug_i);
             }
+
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
                 .tooltip("Miracle")
@@ -108,6 +111,9 @@ pub fn run() {
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => {
                         app.exit(0);
+                    }
+                    "update-wallpaper" => {
+                        let _ = app.emit("update-wallpaper", ());
                     }
                     "restart" => {
                         app.restart();
