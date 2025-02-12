@@ -2402,7 +2402,6 @@ dependencies = [
 name = "miracle-wallpaper"
 version = "0.1.0"
 dependencies = [
- "lazy_static",
  "raw-window-handle",
  "serde",
  "serde_json",

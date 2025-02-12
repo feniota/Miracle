@@ -83,7 +83,7 @@ let wp_retry_id = -1;
 const get_wallpaper = () => {
   debug("start fetching wallpaper");
   const Snackbar = snackbar({ message: "正在在线获取壁纸", placement: "top" });
-  // Windows spotlightb v4 api
+  // Windows spotlight v4 api
   // from: https://github.com/ORelio/Spotlight-Downloader/blob/master/SpotlightAPI.md#api-v4
   const headers = {
     "User-Agent": "WindowsShellClient",

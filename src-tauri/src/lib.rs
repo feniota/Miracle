@@ -1,9 +1,8 @@
-use lazy_static::lazy_static;
 use raw_window_handle::RawWindowHandle::Win32;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use std::ffi::c_void;
 use std::sync::atomic::AtomicPtr;
-use std::sync::{Arc, Mutex};
+use std::sync::OnceLock;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::TrayIconBuilder;
 use tauri::{Emitter, Manager};
@@ -17,11 +16,13 @@ use windows::Win32::UI::WindowsAndMessaging::{
     SEND_MESSAGE_TIMEOUT_FLAGS,
 };
 
-// 定义一个全局变量来存储 workview 句柄
-lazy_static! {
-    static ref WORKVIEW_HANDLE: Arc<Mutex<AtomicPtr<c_void>>> =
-        Arc::new(Mutex::new(AtomicPtr::new(std::ptr::null_mut())));
-}
+// // 定义一个全局变量来存储 workview 句柄
+// lazy_static! {
+//     static ref WORKVIEW_HANDLE: Arc<Mutex<AtomicPtr<c_void>>> =
+//         Arc::new(Mutex::new(AtomicPtr::new(std::ptr::null_mut())));
+// }
+
+static WORKVIEW_HANDLE: OnceLock<AtomicPtr<c_void>> = OnceLock::new();
 
 unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
     // 在这里处理每个窗口句柄 hwnd
@@ -42,7 +43,8 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
                 w!("WorkerW"),
                 PCWSTR::null(),
             ) {
-                *WORKVIEW_HANDLE.lock().unwrap() = AtomicPtr::new(workview.0);
+                //*WORKVIEW_HANDLE.lock().unwrap() = AtomicPtr::new(workview.0);
+                WORKVIEW_HANDLE.get_or_init(|| AtomicPtr::new(workview.0));
             } else {
                 // try a different method
                 // https://github.com/rocksdanister/lively/blob/d5ca68c17663242c15580b55962364ac4061f89e/src/Lively/Lively/Core/WinDesktopCore.cs#L1123
@@ -53,7 +55,7 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
                     w!("WorkerW"),
                     PCWSTR::null(),
                 ) {
-                    *WORKVIEW_HANDLE.lock().unwrap() = AtomicPtr::new(workview.0);
+                    WORKVIEW_HANDLE.get_or_init(|| AtomicPtr::new(workview.0));
                 }
             }
         }
@@ -165,18 +167,20 @@ pub fn run() {
                                     Option::None,
                                 );
                                 let _ = EnumWindows(Some(enum_windows_callback), LPARAM(0));
-                                let workview_handle = *WORKVIEW_HANDLE.lock().unwrap().get_mut();
-                                if workview_handle == std::ptr::null_mut() {
-                                    failure_dialog("未获取到 WorkerW 窗口句柄。");
-                                } else {
+                                if let Some(workview_handle) = WORKVIEW_HANDLE.get() {
                                     if let Err(e) = SetParent(
                                         HWND(win32handle.hwnd.get() as *mut c_void),
-                                        HWND(workview_handle),
+                                        HWND(
+                                            workview_handle
+                                                .load(std::sync::atomic::Ordering::Acquire),
+                                        ),
                                     ) {
                                         failure_dialog(&format!(
                                             "由于{e}，无法设置父窗口为 WorkerW。"
                                         ));
                                     }
+                                } else {
+                                    failure_dialog("未获取到 WorkerW 窗口句柄。");
                                 }
                             }
                         } else {
