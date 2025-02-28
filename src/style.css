@@ -18,6 +18,8 @@
   background-image: url("/src/assets/wp_placeholder.jpg");
   background-size: cover;
   transition: background-image 3s ease;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #container {

@@ -1,14 +1,17 @@
 use raw_window_handle::RawWindowHandle::Win32;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
-use std::ffi::c_void;
+use std::ffi::{c_ulong, c_void};
+use std::os::raw::c_uint;
 use std::sync::atomic::AtomicPtr;
 use std::sync::OnceLock;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::TrayIconBuilder;
-use tauri::{Emitter, Manager};
+use tauri::window::EffectsBuilder;
+use tauri::{AppHandle, Emitter, Manager, WebviewWindowBuilder};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_dialog::MessageDialogKind;
+use tauri_plugin_positioner::{Position, WindowExt};
 use windows::core::{w, PCWSTR};
 use windows::Win32::Foundation::{BOOL, HWND, LPARAM, TRUE, WPARAM};
 use windows::Win32::UI::WindowsAndMessaging::{
@@ -16,6 +19,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
     SEND_MESSAGE_TIMEOUT_FLAGS,
 };
 
+use windows_dll::dll;
 // // 定义一个全局变量来存储 workview 句柄
 // lazy_static! {
 //     static ref WORKVIEW_HANDLE: Arc<Mutex<AtomicPtr<c_void>>> =
@@ -66,6 +70,95 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
     TRUE
 }
 
+// 定义 WINDOWCOMPOSITIONATTRIB 枚举
+#[repr(u32)]
+pub enum WINDOWCOMPOSITIONATTRIB {
+    WcaAccentPolicy = 19,
+}
+
+// 定义 ACCENT_STATE 枚举
+#[repr(u32)]
+pub enum AccentState {
+    AccentEnableBlurbehind = 3,
+}
+
+// 定义 ACCENT_POLICY 结构体
+#[repr(C)]
+pub struct AccentPolicy {
+    pub accent_state: AccentState,
+    pub accent_flags: c_ulong,
+    pub gradient_color: c_ulong,
+    pub animation_id: c_ulong,
+}
+
+// 定义 WINDOWCOMPOSITIONATTRIBDATA 结构体
+#[repr(C)]
+pub struct WINDOWCOMPOSITIONATTRIBDATA {
+    pub attrib: WINDOWCOMPOSITIONATTRIB,
+    pub pv_data: *mut c_void,
+    pub cb_data: c_uint,
+}
+
+#[dll(user32)]
+extern "system" {
+    #[link_name = "SetWindowCompositionAttribute"]
+    fn set_window_composition_attribute(
+        h_wnd: HWND,
+        data: *mut WINDOWCOMPOSITIONATTRIBDATA,
+    ) -> BOOL;
+}
+
+#[tauri::command]
+async fn launch_forecast_window(app: AppHandle, classes: Vec<String>) -> Result<(), ()> {
+    let init_script = format!(
+        "window.__MIRACLE_DATA_CLASSES=JSON.parse('{}');",
+        serde_json::to_string(&classes).unwrap()
+    );
+    let effects = EffectsBuilder::new()
+        //.effect(tauri::utils::WindowEffect::)
+        .build();
+    let monitor = app.primary_monitor().map_err(|_| ())?.unwrap();
+    let window = WebviewWindowBuilder::new(
+        &app,
+        "forecast",
+        tauri::WebviewUrl::App("/forecast/index.html".into()),
+    )
+    .always_on_top(true)
+    .transparent(true)
+    .decorations(false)
+    .effects(effects)
+    .inner_size(
+        50.0,
+        monitor.size().height as f64 / monitor.scale_factor() - 200.0,
+    )
+    .visible(false)
+    .skip_taskbar(true)
+    .initialization_script(&init_script.as_str())
+    .build()
+    .map_err(|_| ())?;
+    window.move_window(Position::RightCenter).map_err(|_| ())?;
+    let mut accent = AccentPolicy {
+        accent_state: AccentState::AccentEnableBlurbehind,
+        accent_flags: 0,
+        gradient_color: 0,
+        animation_id: 0,
+    };
+    let mut data = WINDOWCOMPOSITIONATTRIBDATA {
+        attrib: WINDOWCOMPOSITIONATTRIB::WcaAccentPolicy,
+        pv_data: &mut accent as *mut _ as *mut c_void,
+        cb_data: std::mem::size_of::<AccentPolicy>() as c_uint,
+    };
+    let hwnd = window.hwnd().unwrap();
+    let res = unsafe { set_window_composition_attribute(hwnd, &mut data) };
+    if !res.as_bool() {
+        let _ = window.destroy();
+        return Err(());
+    }
+    window.show().map_err(|_| ())?;
+    let _ = window.emit("ready", classes);
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -93,6 +186,7 @@ pub fn run() {
         ))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![launch_forecast_window])
         .setup(|app: &mut tauri::App| {
             let quit_i = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
             let wallpaper_i =

@@ -1,0 +1,42 @@
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("/src/assets/NotoSerifSC-VariableFont_wght.ttf");
+}
+
+body {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  font-family: 'Noto Serif SC';
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.divider {
+  margin: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+span {
+  text-shadow: 0 0 7px black;
+}
+
+span.class {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.animatable {
+  opacity: 0;
+}

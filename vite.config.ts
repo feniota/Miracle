@@ -1,11 +1,14 @@
 import { defineConfig } from "vite";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-// @ts-expect-error process is a nodejs global
+// @ts-ignore @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent vite from obscuring rust errors
@@ -25,6 +28,14 @@ export default defineConfig(async () => ({
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
+    },
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        forecast: resolve(__dirname, "forecast/index.html"),
+      },
     },
   },
 }));
