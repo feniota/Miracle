@@ -129,14 +129,14 @@ async fn launch_forecast_window(app: AppHandle, classes: Vec<String>) -> Result<
     .effects(effects)
     .inner_size(
         50.0,
-        monitor.size().height as f64 / monitor.scale_factor() - 200.0,
+        monitor.size().height as f64 / monitor.scale_factor() - 100.0,
     )
     .visible(false)
     .skip_taskbar(true)
     .initialization_script(&init_script.as_str())
     .build()
     .map_err(|_| ())?;
-    window.move_window(Position::RightCenter).map_err(|_| ())?;
+    window.move_window(Position::TopRight).map_err(|_| ())?;
     let mut accent = AccentPolicy {
         accent_state: AccentState::AccentEnableBlurbehind,
         accent_flags: 0,
