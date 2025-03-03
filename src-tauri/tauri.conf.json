@@ -1,48 +1,48 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Feniota Miracle",
-  "version": "0.1.10",
-  "identifier": "cn.enita.miracle",
-  "build": {
-    "beforeDevCommand": "pnpm dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm build",
-    "frontendDist": "../dist"
-  },
-  "app": {
-    "withGlobalTauri": true,
-    "windows": [
-      {
-        "title": "Miracle",
-        "fullscreen": false,
-        "resizable": true,
-        "width": 1000,
-        "height": 800
-      }
-    ],
-    "security": {
-      "csp": null
-    }
-  },
-  "bundle": {
-    "createUpdaterArtifacts": true,
-    "active": true,
-    "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ]
-  },
-  "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDZGNkUzQzZCNzZBRUM4QUQKUldTdHlLNTJhenh1YjNaMVNPcDJhOG5SOGNHSXl5bSs2T3hMbTV6REdrZ0N2cUNNSmhZUkV0SUcK",
-      "endpoints": [
-        "https://miracle.enita.cn/api/v1/update/{{current_version}}",
-        "https://github.com/feniota/Miracle/releases/latest/download/update.json"
-      ]
-    }
-  }
+	"$schema": "https://schema.tauri.app/config/2",
+	"productName": "Feniota Miracle",
+	"version": "0.1.11",
+	"identifier": "cn.enita.miracle",
+	"build": {
+		"beforeDevCommand": "pnpm dev",
+		"devUrl": "http://localhost:1420",
+		"beforeBuildCommand": "pnpm build",
+		"frontendDist": "../dist"
+	},
+	"app": {
+		"withGlobalTauri": true,
+		"windows": [
+			{
+				"title": "Miracle",
+				"fullscreen": false,
+				"resizable": true,
+				"width": 1000,
+				"height": 800
+			}
+		],
+		"security": {
+			"csp": null
+		}
+	},
+	"bundle": {
+		"createUpdaterArtifacts": true,
+		"active": true,
+		"targets": "all",
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		]
+	},
+	"plugins": {
+		"updater": {
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDZGNkUzQzZCNzZBRUM4QUQKUldTdHlLNTJhenh1YjNaMVNPcDJhOG5SOGNHSXl5bSs2T3hMbTV6REdrZ0N2cUNNSmhZUkV0SUcK",
+			"endpoints": [
+				"https://miracle.enita.cn/api/v1/update/{{current_version}}",
+				"https://github.com/feniota/Miracle/releases/latest/download/update.json"
+			]
+		}
+	}
 }
