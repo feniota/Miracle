@@ -4,28 +4,33 @@
 }
 
 body {
-  background-color: rgba(0, 0, 0, 0.2);
+  /* background-color: rgba(0, 0, 0, 0.2); */
   color: white;
   font-family: 'Noto Serif SC';
   overflow: hidden;
   -webkit-user-select: none;
   user-select: none;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 #container {
+  height: 100vh;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+}
+
+#header {
+  font-style: italic;
 }
 
 .content {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.divider {
-  margin: 0.4rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 span {

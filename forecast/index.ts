@@ -22,11 +22,13 @@ declare global {
 }
 
 {
-  const tomorrow = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
-  document.getElementById("date")!.innerHTML = tomorrow.toLocaleDateString();
-  document.getElementById("weekday")!.innerHTML = `周${
-    "日一二三四五六"[tomorrow.getDay() === 7 ? 0 : tomorrow.getDay()]
-  }`;
+  const items = window.__MIRACLE_DATA_CLASSES.length;
+  const classes = document.getElementsByClassName("class")!;
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+  const window_height = window.innerHeight;
+  for (const element of classes as HTMLCollectionOf<HTMLElement>) {
+    element.style.fontSize = `${(window_height - rem) / items - 30}px`;
+  }
 }
 
 {

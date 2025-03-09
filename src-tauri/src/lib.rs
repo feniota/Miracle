@@ -79,7 +79,7 @@ pub enum WINDOWCOMPOSITIONATTRIB {
 // 定义 ACCENT_STATE 枚举
 #[repr(u32)]
 pub enum AccentState {
-    AccentEnableBlurbehind = 3,
+    AccentEnableAcrylicBlurbehind = 4,
 }
 
 // 定义 ACCENT_POLICY 结构体
@@ -138,7 +138,7 @@ async fn launch_forecast_window(app: AppHandle, classes: Vec<String>) -> Result<
     .map_err(|_| ())?;
     window.move_window(Position::TopRight).map_err(|_| ())?;
     let mut accent = AccentPolicy {
-        accent_state: AccentState::AccentEnableBlurbehind,
+        accent_state: AccentState::AccentEnableAcrylicBlurbehind,
         accent_flags: 0,
         gradient_color: 0,
         animation_id: 0,

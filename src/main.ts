@@ -190,17 +190,20 @@ function scheduleTaskAtSpecificTime(
     scheduleTaskAtSpecificTime(task, hour, minute);
   }, delay);
 }
+function launchForecastWindow() {
+  const tomorrow = new Date().getDay() + 1 === 7 ? 0 : new Date().getDay() + 1;
+  const classes = CONFIG.schedule.map((item) => {
+    return item[tomorrow];
+  });
+  classes.push(JSON.stringify(CONFIG.schedule_divider_indexes));
+  invoke("launch_forecast_window", { classes });
+}
+
+// @ts-ignore: for development
+window.launchForecastWindow = launchForecastWindow;
 
 scheduleTaskAtSpecificTime(
-  () => {
-    const tomorrow =
-      new Date().getDay() + 1 === 7 ? 0 : new Date().getDay() + 1;
-    const classes = CONFIG.schedule.map((item) => {
-      return item[tomorrow];
-    });
-    classes.push(JSON.stringify(CONFIG.schedule_divider_indexes));
-    invoke("launch_forecast_window", { classes });
-  },
+  launchForecastWindow,
   CONFIG.forecast_time.hour,
   CONFIG.forecast_time.minute
 );
