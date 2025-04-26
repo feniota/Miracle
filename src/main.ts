@@ -10,6 +10,12 @@ import { animate_wallpaper_description } from "./lib/animation";
 import { invoke } from "@tauri-apps/api/core";
 const axios = _axios.create({ adapter: axiosTauriApiAdapter });
 
+declare global {
+  interface Window {
+    wallpaper_url: string;
+  }
+}
+
 // generate schedule text
 if (CONFIG) {
   if (Array.isArray(CONFIG.schedule)) {
@@ -79,7 +85,6 @@ if (CONFIG) {
     }, 1000);
   setTimeout(startTiming, 1000 - new Date().getMilliseconds());
 }
-
 // 如果壁纸获取失败并调用了 setTimeout，这将是返回的 id，否则是 -1
 let wp_retry_id = -1;
 // obtain daily wallpaper
@@ -122,7 +127,9 @@ const get_wallpaper = () => {
           placement: "top",
         });
         wp_retry_id = -1;
+        if (window.wallpaper_url) URL.revokeObjectURL(window.wallpaper_url);
         const url = URL.createObjectURL(res.img.data);
+        window.wallpaper_url = url;
         document.getElementById("body")!.style.backgroundImage = `url(${url})`;
         animate_wallpaper_description(
           res.desc.ad.title,
@@ -138,15 +145,13 @@ const get_wallpaper = () => {
       Snackbar.open = false;
       snackbar({
         message:
-          "由于 " +
-          (e.msg || e.code || e) +
-          "，壁纸下载失败，将于 3 分钟后重试",
+          "由于 " + (e.msg || e.code || e) + "，壁纸下载失败，将于一分钟后重试",
         placement: "top",
         messageLine: 2,
       });
       if (e.resp) warn(e.resp);
-      // retry after 3mins, 指定 window 是为了不让 tsc 觉得是 Node.js 的 timeout
-      wp_retry_id = window.setTimeout(get_wallpaper, 180000);
+      // retry after 1mins, 指定 window 是为了不让 tsc 觉得是 Node.js 的 timeout
+      wp_retry_id = window.setTimeout(get_wallpaper, 60_000);
     });
 };
 get_wallpaper();
@@ -190,6 +195,7 @@ function scheduleTaskAtSpecificTime(
     scheduleTaskAtSpecificTime(task, hour, minute);
   }, delay);
 }
+
 function launchForecastWindow() {
   const tomorrow = new Date().getDay() + 1 === 7 ? 0 : new Date().getDay() + 1;
   const classes = CONFIG.schedule.map((item) => {
