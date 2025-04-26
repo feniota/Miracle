@@ -1,0 +1,107 @@
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("../src/assets/NotoSerifSC-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Red Hat Mono";
+  src: url("../src/assets/RedHatMono-VariableFont_wght.ttf");
+}
+
+:root {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+:is(body) {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-image: url("../src/assets/wp_placeholder.jpg");
+  font-family: "Noto Serif SC", "serif";
+  overflow: hidden;
+  background-size: cover !important;
+  transition: background-image 3s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  color: white;
+}
+
+#container {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+
+  margin-left: 4vw;
+  margin-right: 4vw;
+  height: 100vh;
+  width: 92vw;
+}
+
+#time-now {
+  grid-column-start: 1;
+  grid-column-end: 6;
+  grid-row-start: 2;
+  grid-row-end: 4;
+  font-size: 16vh;
+  font-family: 'Red Hat Mono';
+  font-weight: 700;
+}
+
+#time-cb {
+  /* on the next row and the same size as time-now */
+  grid-column-start: 1;
+  grid-column-end: 6;
+  grid-row-start: 4;
+  grid-row-end: 6;
+  font-size: 4vh;
+  font-family: "Red Hat Mono";
+
+  #time-cb__time {
+    font-size: 8vh;
+  }
+}
+
+#time-background {
+  grid-column-start: 1;
+  grid-column-end: 6;
+  grid-row-start: 2;
+  grid-row-end: 6;
+  backdrop-filter: blur(20px);
+}
+
+#control {
+  grid-row-start: 7;
+  grid-row-end: 9;
+  grid-column-start: 1;
+  grid-column-end: 6;
+}
+
+#control-dialog {
+  display: flex;
+  flex-direction: column;
+  grid-row-start: 7;
+  grid-row-end: 9;
+  grid-column-start: 1;
+  grid-column-end: 6;
+  color: rgb(var(--mdui-color-on-surface));
+
+  .option-headline {
+    font-weight: 500;
+  }
+
+  * {
+    padding-bottom: 10px;
+  }
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+mdui-select::part(menu) {
+  height: 30vh;
+  overflow-y: scroll;
+}

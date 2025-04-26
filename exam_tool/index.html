@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body id="body">
+    <div id="container">
+      <div id="time-background">
+        <div id="time-now"></div>
+        <div id="time-cb">
+          <span id="time-cb__time"></span>
+          <span id="time-cb__label">remaining</span>
+        </div>
+      </div>
+      <div id="control">
+        <mdui-button id="control__start">开始计时</mdui-button>
+      </div>
+    </div>
+    <mdui-dialog
+      headline="开始计时"
+      description="请选择恰当的预设和时间"
+      close-on-overlay-click
+      id="control-dialog-dialog"
+      ><div id="control-dialog">
+        <div class="option-headline">计时预设</div>
+        <div class="flex-row">
+          <mdui-select required id="preset-select"></mdui-select>
+        </div>
+        <div class="option-headline">开始于</div>
+        <div class="flex-row">
+          <mdui-select required id="hour-select"></mdui-select>
+          <div>&nbsp;&nbsp;:&nbsp;&nbsp;</div>
+          <mdui-select required id="minute-select"></mdui-select>
+        </div>
+      </div>
+      <mdui-button slot="action" id="start-button">开始计时</mdui-button>
+      <div slot="overlay"></div>
+    </mdui-dialog>
+  </body>
+  <script src="./index.ts" type="module"></script>
+</html>

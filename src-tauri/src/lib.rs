@@ -5,19 +5,18 @@ use std::sync::atomic::AtomicPtr;
 use std::sync::OnceLock;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::TrayIconBuilder;
-use tauri::window::EffectsBuilder;
-use tauri::{AppHandle, Emitter, Manager, WebviewWindowBuilder};
+use tauri::{Emitter, Manager};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_dialog::MessageDialogKind;
-use tauri_plugin_positioner::{Position, WindowExt};
-use window_vibrancy::apply_acrylic;
 use windows::core::{w, PCWSTR};
 use windows::Win32::Foundation::{BOOL, HWND, LPARAM, TRUE, WPARAM};
 use windows::Win32::UI::WindowsAndMessaging::{
     EnumWindows, FindWindowExW, FindWindowW, SendMessageTimeoutW, SetParent,
     SEND_MESSAGE_TIMEOUT_FLAGS,
 };
+mod func;
+use crate::func::{exam_window::launch_exam_window, forecast_window::launch_forecast_window};
 
 // // 定义一个全局变量来存储 workview 句柄
 // lazy_static! {
@@ -69,44 +68,10 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, _: LPARAM) -> BOOL {
     TRUE
 }
 
-#[tauri::command]
-async fn launch_forecast_window(app: AppHandle, classes: Vec<String>) -> Result<(), ()> {
-    let init_script = format!(
-        "window.__MIRACLE_DATA_CLASSES=JSON.parse('{}');",
-        serde_json::to_string(&classes).unwrap()
-    );
-    let effects = EffectsBuilder::new()
-        //.effect(tauri::utils::WindowEffect::)
-        .build();
-    let monitor = app.primary_monitor().map_err(|_| ())?.unwrap();
-    let window = WebviewWindowBuilder::new(
-        &app,
-        "forecast",
-        tauri::WebviewUrl::App("/forecast/index.html".into()),
-    )
-    .always_on_top(true)
-    .transparent(true)
-    .decorations(false)
-    .effects(effects)
-    .inner_size(
-        50.0,
-        monitor.size().height as f64 / monitor.scale_factor() - 100.0,
-    )
-    .visible(false)
-    .skip_taskbar(true)
-    .initialization_script(&init_script.as_str())
-    .build()
-    .map_err(|_| ())?;
-    window.move_window(Position::TopRight).map_err(|_| ())?;
-    apply_acrylic(&window, Some((0, 0, 0, 20))).map_err(|_| ())?;
-    window.show().map_err(|_| ())?;
-    let _ = window.emit("ready", classes);
-    Ok(())
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(
             tauri_plugin_log::Builder::new()
@@ -137,7 +102,8 @@ pub fn run() {
             let wallpaper_i =
                 MenuItem::with_id(app, "update-wallpaper", "更新壁纸", true, None::<&str>)?;
             let restart_i = MenuItem::with_id(app, "restart", "重启壁纸", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&quit_i, &wallpaper_i, &restart_i])?;
+            let exam_tool_i = MenuItem::with_id(app, "exam_tool", "考试工具", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&quit_i, &wallpaper_i, &restart_i, &exam_tool_i])?;
 
             #[cfg(debug_assertions)]
             {
@@ -162,6 +128,9 @@ pub fn run() {
                     "debug" => {
                         #[cfg(debug_assertions)]
                         let _ = app.get_webview_window("main").unwrap().open_devtools();
+                    }
+                    "exam_tool" => {
+                        let _ = launch_exam_window(app);
                     }
                     _ => {
                         println!("menu item {:?} not handled", event.id);

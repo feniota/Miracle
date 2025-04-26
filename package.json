@@ -16,6 +16,7 @@
     "@tauri-apps/plugin-http": "~2",
     "@tauri-apps/plugin-log": "~2.2.0",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-store": "~2",
     "@tauri-apps/plugin-updater": "~2",
     "axios": "^1.7.9",
     "axios-tauri-api-adapter": "^2.0.5",

@@ -35,6 +35,7 @@ export default defineConfig(async () => ({
       input: {
         main: resolve(__dirname, "index.html"),
         forecast: resolve(__dirname, "forecast/index.html"),
+        exam_tool: resolve(__dirname, "exam_tool/index.html"),
       },
     },
   },
